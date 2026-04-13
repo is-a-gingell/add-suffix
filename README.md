@@ -1,2 +1,2 @@
 # add-suffix
-add directed suffix via image to a video
+Add directed suffix via image to a video
