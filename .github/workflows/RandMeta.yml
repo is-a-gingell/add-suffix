@@ -52,6 +52,7 @@ jobs:
                 echo -e "\e[1;38;5;196m=======================\e[0m"
                 echo ""
                 echo -e "\e[1;33mCopy the URL above and open it in a new tab.\e[0m"
+                echo "Tunnel is running in background..."
                 break
               fi
             fi
@@ -64,4 +65,5 @@ jobs:
             exit 1
           fi
 
-          tail -f tunnel.log
+          # Keep workflow alive without exiting
+          sleep 3600
