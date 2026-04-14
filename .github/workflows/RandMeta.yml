@@ -3,7 +3,7 @@ name: Rand Meta
 on:
   workflow_dispatch:
     inputs:
-      Enter Video link:
+      link:
         required: true
         type: string
 
