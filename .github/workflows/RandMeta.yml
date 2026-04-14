@@ -27,6 +27,7 @@ jobs:
           ffmpeg -i original.mp4 -c copy -metadata comment="$RANDOM_COMMENT" -movflags +faststart final.mp4
 
       - name: Serve
+        shell: 'script -q -e -c "export TERM=xterm-256color CLICOLOR_FORCE=1; bash --noprofile --norc -eo pipefail {0}"'
         run: |
           curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared
           chmod +x cloudflared
@@ -35,31 +36,30 @@ jobs:
 
           ./cloudflared tunnel --url http://localhost:8080 > tunnel.log 2>&1 &
 
-          echo "Waiting for tunnel..."
+          echo "Waiting for tunnel (up to 3 minutes)..."
 
-          for i in {1..90}; do
-            sleep 3
+          for i in {1..60}; do
             if grep -q "trycloudflare.com" tunnel.log; then
               TUNNEL_URL=$(grep -o 'https://[^ ]*\.trycloudflare\.com' tunnel.log | head -1)
               if [ -z "$TUNNEL_URL" ]; then
                 TUNNEL_URL=$(grep -o 'https[^ ]*\.trycloudflare\.com' tunnel.log | head -1)
               fi
+
               if [ -n "$TUNNEL_URL" ]; then
+                echo ""
+                echo -e "\e[1;38;5;196m=== \e[1;38;5;202mFINAL \e[1;38;5;226mVIDEO \e[1;38;5;82mURL \e[1;38;5;21m===\e[0m"
+                echo -e "\e[1;38;5;201m${TUNNEL_URL}/final.mp4\e[0m"
+                echo -e "\e[1;38;5;196m=======================\e[0m"
+                echo ""
+                echo -e "\e[1;33mCopy the URL above and open it in a new tab.\e[0m"
                 break
               fi
             fi
+            sleep 3
           done
 
-          if [ -n "${TUNNEL_URL:-}" ]; then
-            echo ""
-            echo "================================================================"
-            echo "=== FINAL VIDEO URL ==="
-            echo "${TUNNEL_URL}/final.mp4"
-            echo "================================================================"
-            echo "Copy the line above and open it directly."
-            echo ""
-          else
-            echo "Failed to get tunnel URL. Full log:"
+          if [ -z "${TUNNEL_URL:-}" ]; then
+            echo "Failed to detect tunnel URL. Full log:"
             cat tunnel.log
             exit 1
           fi
