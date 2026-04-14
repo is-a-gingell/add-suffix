@@ -35,13 +35,25 @@ jobs:
 
           ./cloudflared tunnel --url http://localhost:8080 > tunnel.log 2>&1 &
 
+          echo "Waiting for tunnel..."
+
           for i in {1..60}; do
             if grep -q "trycloudflare.com" tunnel.log; then
               TUNNEL_URL=$(grep -o 'https://[^ ]*\.trycloudflare\.com' tunnel.log | head -1)
-              echo "URL: ${TUNNEL_URL}/final.mp4"
+              echo ""
+              echo "=== FINAL VIDEO URL ==="
+              echo "${TUNNEL_URL}/final.mp4"
+              echo "======================="
+              echo ""
               break
             fi
             sleep 3
           done
+
+          if [ -z "${TUNNEL_URL:-}" ]; then
+            echo "Failed to get tunnel URL"
+            cat tunnel.log
+            exit 1
+          fi
 
           tail -f tunnel.log
