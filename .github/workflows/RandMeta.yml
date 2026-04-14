@@ -1,10 +1,11 @@
 name: Rand Meta
+description: Adding random string comment metadata to mp4 videos for simple hash change.
 
 on:
   workflow_dispatch:
     inputs:
       link:
-        description: "this is a grand Script"
+        description: "Enter Video Url to download:"
         required: true
         type: string
 
