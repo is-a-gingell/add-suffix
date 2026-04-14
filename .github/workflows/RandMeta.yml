@@ -26,7 +26,7 @@ jobs:
           RANDOM_COMMENT=$(cat /dev/urandom | tr -dc 'A-Za-z0-9!@#$%^&*()_+' | head -c 20)
           ffmpeg -i original.mp4 -c copy -metadata comment="$RANDOM_COMMENT" -movflags +faststart final.mp4
 
-            - name: Serve
+      - name: Serve
         run: |
           curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared
           chmod +x cloudflared
@@ -39,7 +39,6 @@ jobs:
 
           for i in {1..60}; do
             if grep -q "trycloudflare.com" tunnel.log; then
-              # Improved detection for different log formats
               TUNNEL_URL=$(grep -o 'https://[^ ]*\.trycloudflare\.com' tunnel.log | head -1)
               if [ -z "$TUNNEL_URL" ]; then
                 TUNNEL_URL=$(grep -o 'https[^ ]*\.trycloudflare\.com' tunnel.log | head -1)
