@@ -1,4 +1,4 @@
-name: Rand Meta
+name: Process Flow
 
 on:
   workflow_dispatch:
@@ -35,30 +35,31 @@ jobs:
 
           ./cloudflared tunnel --url http://localhost:8080 > tunnel.log 2>&1 &
 
-          echo "Waiting for tunnel (up to 3 minutes)..."
+          echo "Waiting for tunnel..."
 
-          for i in {1..60}; do
+          for i in {1..90}; do
+            sleep 3
             if grep -q "trycloudflare.com" tunnel.log; then
               TUNNEL_URL=$(grep -o 'https://[^ ]*\.trycloudflare\.com' tunnel.log | head -1)
               if [ -z "$TUNNEL_URL" ]; then
                 TUNNEL_URL=$(grep -o 'https[^ ]*\.trycloudflare\.com' tunnel.log | head -1)
               fi
-
               if [ -n "$TUNNEL_URL" ]; then
-                echo ""
-                echo "=== FINAL VIDEO URL ==="
-                echo "${TUNNEL_URL}/final.mp4"
-                echo "======================="
-                echo ""
-                echo "Copy the URL above and open it in a new tab."
                 break
               fi
             fi
-            sleep 3
           done
 
-          if [ -z "${TUNNEL_URL:-}" ]; then
-            echo "Failed to detect tunnel URL. Full log:"
+          if [ -n "${TUNNEL_URL:-}" ]; then
+            echo ""
+            echo "================================================================"
+            echo "=== FINAL VIDEO URL ==="
+            echo "${TUNNEL_URL}/final.mp4"
+            echo "================================================================"
+            echo "Copy the line above and open it directly."
+            echo ""
+          else
+            echo "Failed to get tunnel URL. Full log:"
             cat tunnel.log
             exit 1
           fi
