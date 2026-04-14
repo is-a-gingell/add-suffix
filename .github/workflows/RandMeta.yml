@@ -45,11 +45,15 @@ jobs:
               fi
 
               if [ -n "$TUNNEL_URL" ]; then
-                echo ""
-                echo "=== FINAL VIDEO URL ==="
+                echo "&nbsp"
+                echo "&nbsp"
+                echo "&nbsp"
+                echo "========================== FINAL VIDEO URL =========================="
                 echo "${TUNNEL_URL}/final.mp4"
-                echo "======================="
-                echo ""
+                echo "====================================================================="
+                echo "&nbsp"
+                echo "&nbsp"
+                echo "&nbsp"
                 echo "Copy the URL above and open it in a new tab."
                 break
               fi
