@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       link:
+        description: "this is a grand Script"
         required: true
         type: string
 
