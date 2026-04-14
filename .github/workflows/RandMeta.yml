@@ -27,7 +27,6 @@ jobs:
           ffmpeg -i original.mp4 -c copy -metadata comment="$RANDOM_COMMENT" -movflags +faststart final.mp4
 
       - name: Serve
-        shell: 'script -q -e -c "export TERM=xterm-256color CLICOLOR_FORCE=1; bash --noprofile --norc -eo pipefail {0}"'
         run: |
           curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared
           chmod +x cloudflared
@@ -47,12 +46,11 @@ jobs:
 
               if [ -n "$TUNNEL_URL" ]; then
                 echo ""
-                echo -e "\e[1;38;5;196m=== \e[1;38;5;202mFINAL \e[1;38;5;226mVIDEO \e[1;38;5;82mURL \e[1;38;5;21m===\e[0m"
-                echo -e "\e[1;38;5;201m${TUNNEL_URL}/final.mp4\e[0m"
-                echo -e "\e[1;38;5;196m=======================\e[0m"
+                echo "=== FINAL VIDEO URL ==="
+                echo "${TUNNEL_URL}/final.mp4"
+                echo "======================="
                 echo ""
-                echo -e "\e[1;33mCopy the URL above and open it in a new tab.\e[0m"
-                echo "Tunnel is running in background..."
+                echo "Copy the URL above and open it in a new tab."
                 break
               fi
             fi
@@ -65,5 +63,4 @@ jobs:
             exit 1
           fi
 
-          # Keep workflow alive without exiting
-          sleep 3600
+          tail -f tunnel.log
