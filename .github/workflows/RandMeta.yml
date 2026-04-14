@@ -1,0 +1,47 @@
+name: Rand Meta
+
+on:
+  workflow_dispatch:
+    inputs:
+      link:
+        required: true
+        type: string
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg aria2 curl python3
+
+      - name: Fetch
+        run: |
+          aria2c -x16 -s16 --file-allocation=none --max-tries=0 "${{ inputs.link }}" -o original.mp4
+
+      - name: Process
+        run: |
+          RANDOM_COMMENT=$(cat /dev/urandom | tr -dc 'A-Za-z0-9!@#$%^&*()_+' | head -c 20)
+          ffmpeg -i original.mp4 -c copy -metadata comment="$RANDOM_COMMENT" -movflags +faststart final.mp4
+
+      - name: Serve
+        run: |
+          curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o cloudflared
+          chmod +x cloudflared
+
+          python3 -m http.server 8080 > /dev/null 2>&1 &
+
+          ./cloudflared tunnel --url http://localhost:8080 > tunnel.log 2>&1 &
+
+          for i in {1..60}; do
+            if grep -q "trycloudflare.com" tunnel.log; then
+              TUNNEL_URL=$(grep -o 'https://[^ ]*\.trycloudflare\.com' tunnel.log | head -1)
+              echo "URL: ${TUNNEL_URL}/final.mp4"
+              break
+            fi
+            sleep 3
+          done
+
+          tail -f tunnel.log
