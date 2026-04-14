@@ -1,9 +1,9 @@
-name: Process Flow
+name: Rand Meta
 
 on:
   workflow_dispatch:
     inputs:
-      link:
+      Enter Video link:
         required: true
         type: string
 
@@ -50,9 +50,8 @@ jobs:
                 echo "========================== FINAL VIDEO URL ============================"
                 echo "${TUNNEL_URL}/final.mp4"
                 echo "======================================================================="
-                echo "‎ "
-                echo "‎ "
                 echo "Copy the URL above and open it in a new tab."
+                echo "‎ "
                 echo "‎ "
                 break
               fi
