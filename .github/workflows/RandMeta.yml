@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       link:
-        description: "Enter Video Url to download:"
+        description: "Enter Video Url"
         required: true
         type: string
 
